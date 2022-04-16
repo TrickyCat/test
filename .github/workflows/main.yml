@@ -71,6 +71,7 @@ jobs:
           context: .
           push: true
           tags: trickycat/test-app:${{ steps.versionStep.outputs.semVer }}
+          file: ConsoleApp1/Dockerfile.Alpine
 
       - name: Echo image name
         run: echo trickycat/test-app:${{ steps.versionStep.outputs.semVer }}
