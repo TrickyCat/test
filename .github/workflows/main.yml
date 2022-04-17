@@ -63,8 +63,9 @@ jobs:
           echo $tagCount
           if [ 1 == $tagCount ]; then
               echo Then
-              export versionTag=$(cat "$versionFile")
+              versionTag=$(cat "$versionFile")
               echo $versionTag
+              echo "versionTag=$versionTag" >> $GITHUB_ENV
           else
               echo Else
           fi
@@ -73,7 +74,7 @@ jobs:
 
         
       - name: Echo image name
-        run: echo trickycat/test-app:${{ steps.versionStep.outputs.versionTag }}        
+        run: echo trickycat/test-app:${{ env.versionTag }}        
         
         
         
