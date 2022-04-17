@@ -63,8 +63,8 @@ jobs:
           echo $tagCount
           if [ 1 == $tagCount ]; then
               echo Then
-              # export versionTag=$(cat "$versionFile")
-              # echo $versionTag
+              export versionTag=$(cat "$versionFile")
+              echo $versionTag
           else
               echo Else
           fi
