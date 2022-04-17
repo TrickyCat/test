@@ -58,7 +58,7 @@ jobs:
         run: |
           versionFile=version.txt
           echo "$versionFile"
-          git log -n 1 --pretty=format:"%H" | git tag --contains | grep -E "[0-9]+.[0-9]+.[0-9]+.*" > "$versionFile"
+          git log -n 1 --pretty=format:"%H" | git tag --contains | grep -E "[0-9]+.[0-9]+.[0-9]+.*" || printf "1\n2\n3" > "$versionFile"
           tagCount=$(cat "$versionFile" | wc -l)
           echo $tagCount
           if [ 1 == $tagCount ]; then
