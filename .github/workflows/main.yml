@@ -34,6 +34,9 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
 
+      - name: Run git test
+        run: git
+
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
@@ -51,6 +54,7 @@ jobs:
 
       - name: Determine Version
         id: versionStep
+        shell: bash
         run: |
           versionFile=version.txt
           echo "$versionFile"
@@ -59,8 +63,8 @@ jobs:
           echo $tagCount
           if [ 1 == $tagCount ]; then
               echo Then
-              export versionTag=$(cat "$versionFile")
-              echo $versionTag
+              # export versionTag=$(cat "$versionFile")
+              # echo $versionTag
           else
               echo Else
           fi
