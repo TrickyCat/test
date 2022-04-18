@@ -29,18 +29,18 @@ jobs:
         shell: bash
         run: |
           versionFile=version.txt
-          echo versionFile = $versionFile
+          echo "versionFile = $versionFile"
           ((git log -n 1 --pretty=format:"%H" | git tag --contains | grep -E "[0-9]+.[0-9]+.[0-9]+.*") || printf "1\n2\n3") > "$versionFile"
           tagCount=$(cat "$versionFile" | wc -l)
-          echo tagCount = $tagCount
+          echo "tagCount = $tagCount"
           if [ 1 == $tagCount ]; then
-              echo Then branch
+              echo "Then branch"
               versionTag=$(cat "$versionFile")
-              echo versionTag = $versionTag
+              echo "versionTag = $versionTag"
               echo ${{ secrets.DOCKER_HUB_REPO_NAME }}:${{ versionTag }}
               echo "versionTag=$versionTag" >> $GITHUB_ENV              
           else
-              echo Else branch
+              echo "Else branch"
           fi
         
       - name: Set up QEMU
