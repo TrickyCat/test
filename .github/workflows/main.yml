@@ -37,6 +37,7 @@ jobs:
               echo "Then branch"
               versionTag=$(cat "$versionFile")
               echo "versionTag = $versionTag"
+              echo "Target image name: ${{ secrets.DOCKER_HUB_REPO_NAME }}:$versionTag"
               echo "versionTag=$versionTag" >> $GITHUB_ENV              
           else
               echo "Else branch"
