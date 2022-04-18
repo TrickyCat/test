@@ -1,20 +1,14 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
+name: CI / CD
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   create:
-    # branches:
-    #   - main
-    #   - release**
     tags:
       - '[0-9]+.[0-9]+.[0-9]+.*'
   
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,85 +20,49 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      - name: Run git test
-        run: git log -n 1
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-
-      # - name: Install GitVersion
-      #   uses: gittools/actions/gitversion/setup@v0.9.7
-      #   with:
-      #     versionSpec: '5.x'
-          
-      # - name: Determine Version
-      #   id: versionStep
-      #   uses: gittools/actions/gitversion/execute@v0.9.7          
-
-      - name: Determine Version
-        # id: versionStep
+      - name: Determine Release Version
         shell: bash
         run: |
           versionFile=version.txt
-          echo "$versionFile"
+          echo versionFile = $versionFile
           ((git log -n 1 --pretty=format:"%H" | git tag --contains | grep -E "[0-9]+.[0-9]+.[0-9]+.*") || printf "1\n2\n3") > "$versionFile"
           tagCount=$(cat "$versionFile" | wc -l)
-          echo $tagCount
+          echo tagCount = $tagCount
           if [ 1 == $tagCount ]; then
-              echo Then
+              echo Then branch
               versionTag=$(cat "$versionFile")
-              echo $versionTag
-              echo "versionTag=$versionTag" >> $GITHUB_ENV
+              echo versionTag = $versionTag
+              echo ${{ secrets.DOCKER_HUB_REPO_NAME }}:${{ versionTag }}
+              echo "versionTag=$versionTag" >> $GITHUB_ENV              
           else
-              echo Else
+              echo Else branch
           fi
-
-
-
         
-      - name: Echo image name
-        run: echo trickycat/test-app:${{ env.versionTag }}        
-        
-        
-        
-      
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         if: ${{ env.versionTag != '' }}
 
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         if: ${{ env.versionTag != '' }}
 
-      -
-        name: Login to DockerHub
+      - name: Login to DockerHub
         uses: docker/login-action@v1
         if: ${{ env.versionTag != '' }}
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v2
         if: ${{ env.versionTag != '' }}
         with:
           context: .
           push: true
-          # tags: trickycat/test-app:${{ steps.versionStep.outputs.semVer }}
-          tags: trickycat/test-app:${{ env.versionTag }}
+          tags: ${{ secrets.DOCKER_HUB_REPO_NAME }}:${{ env.versionTag }}
           file: ConsoleApp1/Dockerfile.Alpine
-
-
